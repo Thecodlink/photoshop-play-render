@@ -1,11 +1,26 @@
+warnock | File:Dr. John Warnock Receives National Medal of Technology & Innovation from Barack Obama 2009.jpg | CC0 | cropped to Warnock | commons.wikimedia.org
+founders1985 | File:Jobs-Adobe-Founders-LaserWriter.jpg | CC BY-SA 3.0 | Jobs with Warnock & Geschke | commons.wikimedia.org
+gatescut | File:Bill Gates speaking at DFID (5093072151).jpg | CC BY 2.0 | DFID - UK Department for International Development | commons.wikimedia.org
+gates-oath + gates98-face | United States v. Microsoft deposition stills, Aug 27 1998 | Public domain | United States Department of Justice (DOJ) | commons.wikimedia.org
+altman | File:Sam Altman November 2022.jpg | CC BY 2.0 | commons.wikimedia.org
+thinking | File:Oude man aan tafel, RP-P-1931-236.jpg | CC0 | E. Smalhout, 1914, Rijksmuseum | commons.wikimedia.org
+dollar1 | File:United States one dollar bill, obverse.jpg | Public domain | commons.wikimedia.org
+dollar1r | File:United States one dollar bill, reverse.jpg | Public domain | commons.wikimedia.org
+dollar100 | File:U.S. hundred dollar bill, 1999.jpg | Public domain | commons.wikimedia.org
 mac | File:Macintosh Plus cropped.jpg | CC BY 4.0 | Shelby Jueden | commons.wikimedia.org
 floppy | File:1986 year. 5¼-inch floppy disks.jpg | CC BY-SA 4.0 | Dmitry Makeev | commons.wikimedia.org
 cds | File:Stack of CDs resting on a wooden table near a computer keyboard in a home office setting.jpg | CC BY 2.0 | Shixart1985 | commons.wikimedia.org
-gates | File:Bill Gates - United States v. Microsoft.jpg | Public domain | United States Department of Justice (DOJ) The original uploader was Therealview  | commons.wikimedia.org
-gatesbig | File:Bill Gates speaking at DFID (5093072151).jpg | CC BY 2.0 | DFID - UK Department for International Development | commons.wikimedia.org
 classroom | File:Students working on class assignment in computer lab.jpg | CC BY-SA 2.0 | Michael Surran | commons.wikimedia.org
 adobehq | File:Adobe World Headquarters 1 2015-01-03.JPG | CC BY-SA 4.0 | FASTILY | commons.wikimedia.org
 toll | File:Peaje - Toll - Péage (5020183265).jpg | CC BY 2.0 | Spanish Coches | commons.wikimedia.org
 student | File:Student on the green - laptop-1 (25812934293).jpg | CC BY 2.0 | University of the Fraser Valley | commons.wikimedia.org
 student2004 | File:Student using desktop computer at CIJEF in 2004.jpg | CC0 | Syced | commons.wikimedia.org
-newsroom | File:Interior view of newspaper delivery room showing man taking stack of newspapers from machine) - World-Telegram photo LCCN95506971.jpg | Public domain | Miscellaneous Items in High Demand, PPOC, Library of Congress | commons.wikimedia.org
+newsroom | File:Interior view of newspaper delivery room showing man taking stack of newspapers from machine) - World-Telegram photo LCCN95506971.jpg | Public domain | Library of Congress | commons.wikimedia.org
+fonts | Playfair Display VF, Archivo Narrow 700, Permanent Marker — self-hosted woff2 (v1 run) | OFL
+sfx | paper kit wavs from v1 run (paper-tap, paper-slide, paper-flick, key-press, pop, whoosh, riser, marker) — SJC pack not present in sfx-library at build time
+cashpile.jpg — "Dollar-499481" by geralt — CC0 — Wikimedia Commons
+handshake.jpg — "HANDSHAKE 2016-07-18" by EU2016 SK — CC0 — Wikimedia Commons
+kidpc.jpg — "APRENDIZAJE ACTIVO" by SAMMYTQM — CC BY-SA 4.0 — Wikimedia Commons
+home.jpg — "Cozy living room setting..." by Shixart1985 — CC BY 2.0 — Wikimedia Commons
+adobe-wordmark.svg — "Adobe Systems logo and wordmark" — Public domain — Wikimedia Commons
+ps-icon.svg — "Adobe Photoshop CS6 icon" — Public domain — Wikimedia Commons

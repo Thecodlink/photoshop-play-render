@@ -7,7 +7,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))          # collage/
 RUN = os.path.dirname(os.path.dirname(os.path.dirname(HERE)))  # run root... collage is 06-scenes/collage
 RUN = os.path.abspath(os.path.join(HERE, "..", ".."))
 video, out = sys.argv[1], sys.argv[2]
-DUR = 75.67
+DUR = 90.55
 cues = json.load(open(os.path.join(HERE, "sfx.json")))
 voice = os.path.join(RUN, "04-audio", "voice.wav")
 
