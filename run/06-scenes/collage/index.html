@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="en" data-resolution="portrait">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=1080, height=1920" />
+  
+  <style>
+    @font-face { font-family: "Playfair Display"; src: url("assets/fonts/PlayfairDisplay-VF.woff2") format("woff2"); font-weight: 400 900; }
+    @font-face { font-family: "Archivo Narrow"; src: url("assets/fonts/ArchivoNarrow-700.woff2") format("woff2"); font-weight: 700; }
+    @font-face { font-family: "Permanent Marker"; src: url("assets/fonts/PermanentMarker-400.woff2") format("woff2"); font-weight: 400; }
+  </style>
+  <script src="assets/gsap.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    .scene { position: absolute; inset: 0; overflow: hidden; }
+    .it { position: absolute; opacity: 0; }
+    .it img, img.cut { display: block; width: 100%; filter: url(#cut); }
+    .sheetw { position: absolute; filter: drop-shadow(0 18px 26px rgba(0,0,0,0.35)); }
+    .sheet { position: absolute; inset: 0; }
+    .serif { font-family: "Playfair Display", serif; font-weight: 900; color: #141210; letter-spacing: -0.01em; }
+    .tag { position: absolute; padding: 9px 16px 8px; background: #141210; color: #F4EFE6; font-family: "Archivo Narrow", sans-serif; font-weight: 700; font-size: 30px; text-transform: uppercase; white-space: nowrap; opacity: 0; }
+    .tag.y { background: #F2C230; color: #141210; } .tag.r { background: #D9352B; } .tag.w { background: #F4EFE6; color: #141210; }
+    .tag.sm { font-size: 22px; padding: 6px 12px 5px; }
+    .sign { position: absolute; padding: 14px 26px 10px; background: #141210; color: #F4EFE6; border: 5px solid #F4EFE6; outline: 3px solid #141210; font-family: "Archivo Narrow", sans-serif; font-weight: 700; font-size: 48px; opacity: 0; }
+    .t3d { position: absolute; font-family: "Playfair Display", serif; font-weight: 900; color: #F4EFE6; -webkit-text-stroke: 9px #141210; paint-order: stroke fill; opacity: 0; white-space: nowrap; line-height: 1.1;
+           text-shadow: 1px 1px 0 #141210, 2px 2px 0 #141210, 3px 3px 0 #141210, 4px 4px 0 #141210, 5px 5px 0 #141210, 6px 6px 0 #141210, 7px 7px 0 #141210, 8px 8px 0 #141210, 9px 9px 0 #141210, 10px 10px 0 #141210, 11px 11px 0 #141210, 12px 12px 0 #141210, 13px 13px 0 #141210, 14px 14px 0 #141210, 22px 26px 26px rgba(0,0,0,0.38); }
+    .stamp { position: absolute; width: 190px; height: 230px; padding: 14px; background: #F4EFE6; opacity: 0;
+             -webkit-mask: radial-gradient(circle 7px at 50% 50%, transparent 98%, #000) -7px -7px / 20px 20px, linear-gradient(#000,#000) 10px 10px / calc(100% - 20px) calc(100% - 20px) no-repeat;
+             filter: drop-shadow(0 8px 10px rgba(0,0,0,0.3)); }
+    .stamp div { width: 100%; height: 160px; background-size: cover; filter: grayscale(1) contrast(1.2) sepia(0.25); }
+    .stamp b { display: block; margin-top: 8px; font-family: "Archivo Narrow", sans-serif; font-size: 22px; color: #B8322A; text-align: center; }
+    .news { position: absolute; height: 120px; padding: 12px 18px; background: #E9E3D3; font-family: "Playfair Display", serif; font-weight: 700; font-size: 19px; line-height: 1.3; color: #2A2622; opacity: 0; overflow: hidden; filter: drop-shadow(0 6px 8px rgba(0,0,0,0.18)); }
+    .pin { position: absolute; width: 30px; height: 30px; border-radius: 50%; border: 4px solid #141210; opacity: 0; }
+    .mk { fill: none; stroke: #D9352B; stroke-width: 7; stroke-linecap: round; stroke-linejoin: round; opacity: 0; }
+    .paint { position: absolute; font-family: "Permanent Marker", cursive; opacity: 0; }
+    /* halftone print: a blurred grey photo under a dot screen, thresholded by a huge contrast */
+    .ht { position: absolute; overflow: hidden; background: #fff; filter: contrast(22); }
+    .ht img { display: block; width: 100%; filter: grayscale(1) contrast(1.5) brightness(var(--ht-b, 0.88)) blur(1.2px); }   /* light photo blowing out to white? set style="--ht-b:0.6" on the .ht */
+    .xm { position: absolute; opacity: 0; }
+    .ht:after { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 50% 50%, #000 0%, #3a3a3a 50%, #b0b0b0 100%) 0 0 / 8px 8px; mix-blend-mode: screen; }
+    #grain { position: absolute; inset: -60px; pointer-events: none; mix-blend-mode: multiply; opacity: 0.55;
+             background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='420' height='420'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.45  0 0 0 0 0.4  0 0 0 0 0.33  0 0 0 0.55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"); }
+    #vig { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(120% 90% at 50% 50%, rgba(0,0,0,0) 60%, rgba(40,25,10,0.28) 100%); }
+    html, body { width: 1080px; height: 1920px; overflow: hidden; background: #1F1D1B; }
+    .xm { position: absolute; opacity: 0; }
+  </style>
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute">
+    <filter id="cut" x="-12%" y="-12%" width="124%" height="124%" color-interpolation-filters="sRGB">
+      <feColorMatrix in="SourceGraphic" type="saturate" values="0" result="g" />
+      <feComponentTransfer in="g" result="bw"><feFuncR type="linear" slope="1.3" intercept="-0.08" /><feFuncG type="linear" slope="1.3" intercept="-0.08" /><feFuncB type="linear" slope="1.22" intercept="-0.1" /></feComponentTransfer>
+      <feMorphology in="SourceAlpha" operator="dilate" radius="7" result="a1" />
+      <feMorphology in="SourceAlpha" operator="dilate" radius="12" result="a2" />
+      <feFlood flood-color="#F4EFE6" result="w" /><feComposite in="w" in2="a1" operator="in" result="wb" />
+      <feFlood flood-color="#D9352B" result="r" /><feComposite in="r" in2="a2" operator="in" result="rb" />
+      <feGaussianBlur in="a2" stdDeviation="9" result="sb" /><feOffset in="sb" dy="12" result="so" />
+      <feFlood flood-color="#000" flood-opacity="0.38" /><feComposite in2="so" operator="in" result="sh" />
+      <feMerge><feMergeNode in="sh" /><feMergeNode in="rb" /><feMergeNode in="wb" /><feMergeNode in="bw" /></feMerge>
+    </filter>
+  </svg>
+  <div id="root" data-composition-id="main" data-start="0" data-duration="75.67" data-width="1080" data-height="1920">
+    <div id="stage" class="clip" data-start="0" data-duration="75.67" data-track-index="0" data-layout-allow-overflow data-layout-allow-overlap data-layout-allow-occlusion>
+      <div id="cam" style="position:absolute; inset:0;">
+<div class="scene" id="s1" style="background:#ECE4D4;">
+  <div id="s1sun" style="position:absolute; left:660px; top:150px; width:400px; height:400px; border-radius:50%; background:#D9352B; opacity:0;"></div>
+  <div class="t3d" id="ttl" style="left:0px; top:120px; font-size:118px; left:0; right:0; text-align:center;">PHOTOSHOP</div>
+  <div class="sheetw" id="hookcard" style="left:90px; top:430px; width:900px; height:300px; opacity:0;"><div class="sheet" style="background:#F4EFE6; clip-path:polygon(0px 0.0px,18px 9.2px,36px 2.9px,54px 2.1px,72px 7.3px,90px 5.3px,108px 3.3px,126px 7.5px,144px 7.6px,162px 5.4px,180px 6.8px,198px 6.4px,216px 8.2px,234px 2.4px,252px 3.7px,270px 7.1px,288px 7.0px,306px 0.5px,324px 6.8px,342px 4.7px,360px 9.2px,378px 8.1px,396px 1.2px,414px 5.1px,432px 9.2px,450px 6.9px,468px 6.4px,486px 5.8px,504px 9.1px,522px 9.1px,540px 3.7px,558px 3.4px,576px 8.4px,594px 3.3px,612px 1.5px,630px 3.0px,648px 4.3px,666px 2.9px,684px 9.4px,702px 5.6px,720px 7.3px,738px 8.8px,756px 0.6px,774px 2.7px,792px 5.6px,810px 5.1px,828px 4.2px,846px 1.9px,864px 9.1px,882px 0.5px,900px 3.7px,896.6px 0px,893.4px 18px,890.8px 36px,894.9px 54px,898.3px 72px,895.9px 90px,897.2px 108px,896.4px 126px,895.8px 144px,896.7px 162px,894.7px 180px,893.9px 198px,897.7px 216px,890.9px 234px,895.4px 252px,891.4px 270px,893.6px 288px,900px 293.7px,882px 294.8px,864px 295.0px,846px 293.1px,828px 290.6px,810px 296.0px,792px 292.9px,774px 297.5px,756px 294.1px,738px 296.5px,720px 296.7px,702px 296.1px,684px 292.1px,666px 291.2px,648px 298.9px,630px 291.8px,612px 299.2px,594px 295.9px,576px 298.5px,558px 299.2px,540px 290.0px,522px 297.8px,504px 293.7px,486px 298.6px,468px 295.4px,450px 294.1px,432px 298.6px,414px 290.8px,396px 291.2px,378px 291.1px,360px 291.1px,342px 290.9px,324px 292.4px,306px 297.2px,288px 299.9px,270px 297.5px,252px 299.2px,234px 300.0px,216px 293.8px,198px 297.7px,180px 292.6px,162px 295.1px,144px 293.1px,126px 297.6px,108px 291.2px,90px 297.6px,72px 296.3px,54px 291.1px,36px 298.8px,18px 295.1px,0px 300.0px,9.1px 300px,6.4px 282px,9.2px 264px,0.2px 246px,9.0px 228px,1.9px 210px,9.7px 192px,5.7px 174px,6.8px 156px,2.7px 138px,2.2px 120px,2.1px 102px,5.6px 84px,0.5px 66px,7.7px 48px,7.0px 30px,7.1px 12px);"></div><div class="serif" style="position:absolute; left:0; right:0; top:44px; text-align:center; font-size:66px; line-height:1.15; white-space:nowrap;">ADOBE WANTED YOU<br/>TO <span style="color:#D9352B;">PIRATE</span> IT</div></div>
+  <div class="tag y" id="tbro" style="left:96px; top:760px;">TWO BROTHERS · THOMAS + JOHN KNOLL</div>
+  <div id="phmac" style="position:absolute; left:215px; top:820px; width:650px; padding:18px 18px 64px; background:#F4EFE6; transform: rotate(-3deg); opacity:0; box-shadow: 0 22px 40px rgba(0,0,0,0.3);">
+    <div style="width:100%; overflow:hidden;"><img src="assets/img/mac.jpg" style="width:100%; display:block; filter: grayscale(1) contrast(1.15) sepia(0.2);" alt="" /></div>
+    <div style="position:absolute; left:22px; bottom:16px; font-family:'Permanent Marker',cursive; font-size:30px; color:#3A3530; white-space:nowrap;">Macintosh · 1990</div>
+    <i style="position:absolute; left:-30px; top:-14px; width:150px; height:44px; background:rgba(235,225,190,0.82); transform: rotate(-28deg);"></i>
+    <i style="position:absolute; right:-34px; top:-10px; width:150px; height:44px; background:rgba(235,225,190,0.82); transform: rotate(24deg);"></i>
+  </div>
+  <div class="sheetw" id="pricecard" style="left:60px; top:1560px; width:540px; height:250px; opacity:0;"><div class="sheet" style="background:#F4EFE6; clip-path:polygon(0px 5.0px,18px 0.3px,36px 1.1px,54px 9.2px,72px 1.3px,90px 6.9px,108px 8.9px,126px 0.4px,144px 8.8px,162px 8.6px,180px 9.9px,198px 9.5px,216px 7.6px,234px 4.2px,252px 2.5px,270px 7.3px,288px 8.8px,306px 4.0px,324px 2.3px,342px 4.0px,360px 8.9px,378px 5.6px,396px 3.5px,414px 6.2px,432px 7.3px,450px 3.4px,468px 7.3px,486px 4.2px,504px 2.0px,522px 3.1px,540px 9.9px,530.1px 0px,533.7px 18px,531.3px 36px,530.8px 54px,538.0px 72px,533.5px 90px,538.6px 108px,535.0px 126px,534.4px 144px,532.3px 162px,530.5px 180px,535.2px 198px,538.1px 216px,535.5px 234px,540px 248.3px,522px 243.4px,504px 244.8px,486px 244.4px,468px 244.9px,450px 242.4px,432px 246.4px,414px 242.5px,396px 249.7px,378px 247.0px,360px 244.6px,342px 248.0px,324px 242.8px,306px 247.1px,288px 247.6px,270px 243.4px,252px 245.7px,234px 249.2px,216px 242.3px,198px 241.8px,180px 240.8px,162px 240.9px,144px 243.2px,126px 240.4px,108px 249.7px,90px 242.4px,72px 244.0px,54px 242.8px,36px 241.0px,18px 249.6px,0px 248.6px,0.8px 250px,1.1px 232px,0.8px 214px,0.1px 196px,6.1px 178px,9.5px 160px,1.9px 142px,1.3px 124px,2.0px 106px,6.7px 88px,2.4px 70px,4.6px 52px,9.9px 34px,4.2px 16px);"></div><div class="serif" style="position:absolute; left:36px; top:26px; font-size:104px; white-space:nowrap;">$895</div><div style="position:absolute; left:38px; top:158px; font-family:'Archivo Narrow'; font-weight:700; font-size:26px; letter-spacing:2px; white-space:nowrap;">THE PRICE TAG · 1990</div></div>
+  <div class="stamp" id="stnews" style="left:690px; top:1560px;"><div style="background-image:url(assets/img/newsroom.jpg); background-position:50% 50%;"></div><b>NEWS</b></div>
+</div>
+<div class="sheetw" id="s2w" style="left:-60px; top:0; width:1200px; height:1920px;">
+  <div class="sheet" style="clip-path:polygon(0px 0px,26px 0px,52px 0px,78px 0px,104px 0px,130px 0px,156px 0px,182px 0px,208px 0px,234px 0px,260px 0px,286px 0px,312px 0px,338px 0px,364px 0px,390px 0px,416px 0px,442px 0px,468px 0px,494px 0px,520px 0px,546px 0px,572px 0px,598px 0px,624px 0px,650px 0px,676px 0px,702px 0px,728px 0px,754px 0px,780px 0px,806px 0px,832px 0px,858px 0px,884px 0px,910px 0px,936px 0px,962px 0px,988px 0px,1014px 0px,1040px 0px,1066px 0px,1092px 0px,1118px 0px,1144px 0px,1170px 0px,1196px 0px,1200px 0px,1200px 26px,1200px 52px,1200px 78px,1200px 104px,1200px 130px,1200px 156px,1200px 182px,1200px 208px,1200px 234px,1200px 260px,1200px 286px,1200px 312px,1200px 338px,1200px 364px,1200px 390px,1200px 416px,1200px 442px,1200px 468px,1200px 494px,1200px 520px,1200px 546px,1200px 572px,1200px 598px,1200px 624px,1200px 650px,1200px 676px,1200px 702px,1200px 728px,1200px 754px,1200px 780px,1200px 806px,1200px 832px,1200px 858px,1200px 884px,1200px 910px,1200px 936px,1200px 962px,1200px 988px,1200px 1014px,1200px 1040px,1200px 1066px,1200px 1092px,1200px 1118px,1200px 1144px,1200px 1170px,1200px 1196px,1200px 1222px,1200px 1248px,1200px 1274px,1200px 1300px,1200px 1326px,1200px 1352px,1200px 1378px,1200px 1404px,1200px 1430px,1200px 1456px,1200px 1482px,1200px 1508px,1200px 1534px,1200px 1560px,1200px 1586px,1200px 1612px,1200px 1638px,1200px 1664px,1200px 1690px,1200px 1716px,1200px 1742px,1200px 1768px,1200px 1794px,1200px 1820px,1200px 1846px,1200px 1872px,1200px 1898px,1200px 1920px,1174px 1920px,1148px 1920px,1122px 1920px,1096px 1920px,1070px 1920px,1044px 1920px,1018px 1920px,992px 1920px,966px 1920px,940px 1920px,914px 1920px,888px 1920px,862px 1920px,836px 1920px,810px 1920px,784px 1920px,758px 1920px,732px 1920px,706px 1920px,680px 1920px,654px 1920px,628px 1920px,602px 1920px,576px 1920px,550px 1920px,524px 1920px,498px 1920px,472px 1920px,446px 1920px,420px 1920px,394px 1920px,368px 1920px,342px 1920px,316px 1920px,290px 1920px,264px 1920px,238px 1920px,212px 1920px,186px 1920px,160px 1920px,134px 1920px,108px 1920px,82px 1920px,56px 1920px,30px 1920px,4px 1920px,17.5px 1920px,20.1px 1894px,10.3px 1868px,10.8px 1842px,1.6px 1816px,6.0px 1790px,21.0px 1764px,25.3px 1738px,4.0px 1712px,24.1px 1686px,13.2px 1660px,3.2px 1634px,5.5px 1608px,15.7px 1582px,4.4px 1556px,2.0px 1530px,7.1px 1504px,16.8px 1478px,14.5px 1452px,12.5px 1426px,25.8px 1400px,2.0px 1374px,10.7px 1348px,8.2px 1322px,0.1px 1296px,0.2px 1270px,10.8px 1244px,2.4px 1218px,6.1px 1192px,24.0px 1166px,20.2px 1140px,19.9px 1114px,11.4px 1088px,22.2px 1062px,25.0px 1036px,20.8px 1010px,17.2px 984px,14.9px 958px,9.0px 932px,10.6px 906px,12.9px 880px,12.9px 854px,14.8px 828px,18.8px 802px,17.3px 776px,16.5px 750px,19.0px 724px,23.0px 698px,22.0px 672px,25.7px 646px,11.4px 620px,12.7px 594px,24.9px 568px,25.4px 542px,9.3px 516px,2.1px 490px,8.9px 464px,22.9px 438px,18.4px 412px,19.2px 386px,24.8px 360px,20.5px 334px,5.4px 308px,6.2px 282px,20.8px 256px,2.7px 230px,23.8px 204px,20.8px 178px,16.5px 152px,18.5px 126px,13.9px 100px,11.5px 74px,22.7px 48px,14.6px 22px); background:#1F1D1B; overflow:hidden;">
+    <div style="position:absolute; left:60px; top:0; width:1080px; height:1920px;">
+
+      <div class="serif" id="h2" style="position:absolute; left:0; right:0; top:120px; text-align:center; font-size:88px; color:#F4EFE6; opacity:0;">Almost nobody paid.</div>
+
+      <div id="phfloppy" style="position:absolute; left:190px; top:330px; width:700px; padding:18px 18px 64px; background:#F4EFE6; transform: rotate(2deg); opacity:0; box-shadow: 0 22px 40px rgba(0,0,0,0.3);">
+        <div style="width:100%; overflow:hidden;"><img src="assets/img/floppy.jpg" style="width:100%; display:block; filter: grayscale(1) contrast(1.15) sepia(0.2);" alt="" /></div>
+        <div style="position:absolute; left:22px; bottom:16px; font-family:'Permanent Marker',cursive; font-size:30px; color:#3A3530;">5¼-inch · copy me</div>
+        <i style="position:absolute; left:-30px; top:-14px; width:150px; height:44px; background:rgba(235,225,190,0.82); transform: rotate(-28deg);"></i>
+        <i style="position:absolute; right:-34px; top:-10px; width:150px; height:44px; background:rgba(235,225,190,0.82); transform: rotate(24deg);"></i>
+      </div>
+
+      <div id="phcds" style="position:absolute; left:270px; top:820px; width:560px; padding:18px 18px 64px; background:#F4EFE6; transform: rotate(-4deg); opacity:0; box-shadow: 0 22px 40px rgba(0,0,0,0.3);">
+        <div style="width:100%; overflow:hidden;"><img src="assets/img/cds.jpg" style="width:100%; display:block; filter: grayscale(1) contrast(1.15) sepia(0.2);" alt="" /></div>
+        <div style="position:absolute; left:22px; bottom:16px; font-family:'Permanent Marker',cursive; font-size:30px; color:#3A3530;">the copied disc</div>
+        <i style="position:absolute; left:-30px; top:-14px; width:150px; height:44px; background:rgba(235,225,190,0.82); transform: rotate(-28deg);"></i>
+        <i style="position:absolute; right:-34px; top:-10px; width:150px; height:44px; background:rgba(235,225,190,0.82); transform: rotate(24deg);"></i>
+      </div>
+
+      <div class="tag r" id="t2a" style="left:90px; top:1300px;">A COPIED DISC</div>
+      <div class="tag " id="t2b" style="left:470px; top:1300px;">ONE SERIAL NUMBER</div>
+      <div class="tag y" id="t2c" style="left:250px; top:1420px;">NO INTERNET CHECK</div>
+
+      <div class="sheetw" id="card2" style="left:80px; top:1560px; width:920px; height:260px; opacity:0;"><div class="sheet" style="background:#F4EFE6; clip-path:polygon(0px 8.7px,18px 2.7px,36px 6.9px,54px 4.3px,72px 4.0px,90px 1.9px,108px 5.9px,126px 2.3px,144px 9.0px,162px 8.2px,180px 3.4px,198px 6.8px,216px 8.8px,234px 1.2px,252px 3.1px,270px 9.2px,288px 0.0px,306px 1.3px,324px 4.0px,342px 0.2px,360px 6.9px,378px 9.0px,396px 1.7px,414px 2.1px,432px 9.5px,450px 7.0px,468px 1.8px,486px 1.2px,504px 6.3px,522px 0.2px,540px 8.1px,558px 5.9px,576px 7.5px,594px 1.3px,612px 3.3px,630px 7.1px,648px 9.6px,666px 5.5px,684px 5.9px,702px 7.8px,720px 7.0px,738px 7.3px,756px 6.0px,774px 1.0px,792px 0.5px,810px 6.1px,828px 2.2px,846px 5.8px,864px 2.5px,882px 2.2px,900px 6.2px,918px 6.3px,911.9px 0px,917.6px 18px,910.9px 36px,919.5px 54px,913.1px 72px,915.9px 90px,912.1px 108px,913.4px 126px,912.0px 144px,919.0px 162px,910.8px 180px,915.0px 198px,911.8px 216px,915.8px 234px,911.3px 252px,920px 252.1px,902px 252.7px,884px 250.9px,866px 251.4px,848px 258.1px,830px 252.8px,812px 258.5px,794px 258.7px,776px 250.5px,758px 250.5px,740px 259.4px,722px 259.2px,704px 257.4px,686px 250.6px,668px 251.3px,650px 250.4px,632px 257.2px,614px 258.0px,596px 259.7px,578px 255.3px,560px 254.4px,542px 258.6px,524px 256.8px,506px 255.2px,488px 257.7px,470px 259.5px,452px 259.6px,434px 259.1px,416px 253.7px,398px 255.3px,380px 251.9px,362px 252.7px,344px 254.9px,326px 253.0px,308px 256.1px,290px 253.9px,272px 250.3px,254px 252.3px,236px 250.4px,218px 252.9px,200px 254.0px,182px 252.0px,164px 258.3px,146px 259.3px,128px 252.7px,110px 253.5px,92px 255.7px,74px 254.6px,56px 256.1px,38px 255.1px,20px 258.8px,2px 259.3px,0.8px 260px,3.5px 242px,3.4px 224px,2.0px 206px,6.4px 188px,1.3px 170px,0.5px 152px,0.0px 134px,8.4px 116px,8.7px 98px,0.4px 80px,7.7px 62px,3.2px 44px,4.0px 26px,9.1px 8px);"></div><div class="serif" style="position:absolute; left:0; right:0; top:36px; text-align:center; font-size:54px; line-height:1.2;">ONE OF THE MOST PIRATED<br/>PROGRAMS ON EARTH</div></div>
+
+    </div>
+  </div>
+</div>
+<div class="sheetw" id="s3w" style="left:-60px; top:0; width:1200px; height:1920px;">
+  <div class="sheet" style="clip-path:polygon(0px 0px,26px 0px,52px 0px,78px 0px,104px 0px,130px 0px,156px 0px,182px 0px,208px 0px,234px 0px,260px 0px,286px 0px,312px 0px,338px 0px,364px 0px,390px 0px,416px 0px,442px 0px,468px 0px,494px 0px,520px 0px,546px 0px,572px 0px,598px 0px,624px 0px,650px 0px,676px 0px,702px 0px,728px 0px,754px 0px,780px 0px,806px 0px,832px 0px,858px 0px,884px 0px,910px 0px,936px 0px,962px 0px,988px 0px,1014px 0px,1040px 0px,1066px 0px,1092px 0px,1118px 0px,1144px 0px,1170px 0px,1196px 0px,1200px 0px,1200px 26px,1200px 52px,1200px 78px,1200px 104px,1200px 130px,1200px 156px,1200px 182px,1200px 208px,1200px 234px,1200px 260px,1200px 286px,1200px 312px,1200px 338px,1200px 364px,1200px 390px,1200px 416px,1200px 442px,1200px 468px,1200px 494px,1200px 520px,1200px 546px,1200px 572px,1200px 598px,1200px 624px,1200px 650px,1200px 676px,1200px 702px,1200px 728px,1200px 754px,1200px 780px,1200px 806px,1200px 832px,1200px 858px,1200px 884px,1200px 910px,1200px 936px,1200px 962px,1200px 988px,1200px 1014px,1200px 1040px,1200px 1066px,1200px 1092px,1200px 1118px,1200px 1144px,1200px 1170px,1200px 1196px,1200px 1222px,1200px 1248px,1200px 1274px,1200px 1300px,1200px 1326px,1200px 1352px,1200px 1378px,1200px 1404px,1200px 1430px,1200px 1456px,1200px 1482px,1200px 1508px,1200px 1534px,1200px 1560px,1200px 1586px,1200px 1612px,1200px 1638px,1200px 1664px,1200px 1690px,1200px 1716px,1200px 1742px,1200px 1768px,1200px 1794px,1200px 1820px,1200px 1846px,1200px 1872px,1200px 1898px,1200px 1920px,1174px 1920px,1148px 1920px,1122px 1920px,1096px 1920px,1070px 1920px,1044px 1920px,1018px 1920px,992px 1920px,966px 1920px,940px 1920px,914px 1920px,888px 1920px,862px 1920px,836px 1920px,810px 1920px,784px 1920px,758px 1920px,732px 1920px,706px 1920px,680px 1920px,654px 1920px,628px 1920px,602px 1920px,576px 1920px,550px 1920px,524px 1920px,498px 1920px,472px 1920px,446px 1920px,420px 1920px,394px 1920px,368px 1920px,342px 1920px,316px 1920px,290px 1920px,264px 1920px,238px 1920px,212px 1920px,186px 1920px,160px 1920px,134px 1920px,108px 1920px,82px 1920px,56px 1920px,30px 1920px,4px 1920px,20.7px 1920px,0.3px 1894px,25.8px 1868px,5.3px 1842px,16.7px 1816px,11.1px 1790px,0.9px 1764px,4.5px 1738px,19.6px 1712px,19.6px 1686px,6.5px 1660px,22.3px 1634px,21.2px 1608px,8.3px 1582px,11.9px 1556px,7.8px 1530px,6.6px 1504px,22.9px 1478px,22.6px 1452px,17.6px 1426px,13.0px 1400px,22.5px 1374px,21.3px 1348px,21.1px 1322px,19.8px 1296px,25.2px 1270px,18.0px 1244px,7.4px 1218px,18.5px 1192px,8.4px 1166px,22.5px 1140px,4.2px 1114px,22.0px 1088px,17.1px 1062px,21.2px 1036px,12.1px 1010px,20.7px 984px,21.5px 958px,1.1px 932px,6.0px 906px,5.1px 880px,0.6px 854px,15.0px 828px,21.1px 802px,16.3px 776px,22.2px 750px,22.5px 724px,21.1px 698px,5.4px 672px,14.6px 646px,12.0px 620px,10.0px 594px,14.0px 568px,19.5px 542px,13.5px 516px,10.0px 490px,13.0px 464px,6.4px 438px,18.3px 412px,20.1px 386px,7.7px 360px,6.6px 334px,16.0px 308px,14.3px 282px,24.4px 256px,14.8px 230px,8.2px 204px,15.6px 178px,14.9px 152px,16.5px 126px,14.8px 100px,4.2px 74px,5.4px 48px,3.1px 22px); background:#ECE4D4; overflow:hidden;">
+    <div style="position:absolute; left:60px; top:0; width:1080px; height:1920px;">
+      <div class="it" id="gatescut" style="left:470px; top:170px; width:580px; "><img class="cut" src="assets/img/gatescut.png" alt="" /></div>
+      <div class="tag " id="tg1" style="left:70px; top:190px;">BILL GATES</div>
+      <div class="tag y" id="tg2" style="left:70px; top:262px;">UNIVERSITY OF WASHINGTON · 1998</div>
+      <div class="stamp" id="stg98" style="left:80px; top:560px;"><div style="background-image:url(assets/img/gates1998.jpg); background-position:50% 50%;"></div><b>AUG 1998</b></div>
+      <div class="sheetw" id="quotecard" style="left:70px; top:1060px; width:940px; height:620px; opacity:0;"><div class="sheet" style="background:#F4EFE6; clip-path:polygon(0px 3.3px,18px 6.3px,36px 8.7px,54px 6.4px,72px 3.9px,90px 3.5px,108px 4.0px,126px 1.3px,144px 1.5px,162px 0.5px,180px 4.8px,198px 3.8px,216px 0.9px,234px 6.3px,252px 4.0px,270px 4.6px,288px 1.0px,306px 8.4px,324px 2.7px,342px 3.0px,360px 1.2px,378px 2.0px,396px 4.4px,414px 2.0px,432px 6.1px,450px 5.8px,468px 7.5px,486px 7.8px,504px 4.9px,522px 8.7px,540px 6.8px,558px 1.2px,576px 6.2px,594px 7.4px,612px 8.9px,630px 5.8px,648px 9.7px,666px 2.9px,684px 9.9px,702px 0.4px,720px 1.0px,738px 3.1px,756px 8.6px,774px 9.0px,792px 7.2px,810px 5.5px,828px 2.4px,846px 5.3px,864px 7.8px,882px 1.9px,900px 8.1px,918px 6.8px,936px 5.8px,930.5px 0px,936.9px 18px,939.7px 36px,932.7px 54px,934.9px 72px,933.9px 90px,933.1px 108px,933.2px 126px,939.5px 144px,932.9px 162px,930.2px 180px,931.5px 198px,933.2px 216px,934.3px 234px,937.8px 252px,933.7px 270px,934.3px 288px,935.6px 306px,939.8px 324px,931.4px 342px,933.5px 360px,930.2px 378px,936.9px 396px,932.6px 414px,930.6px 432px,934.3px 450px,933.8px 468px,938.0px 486px,937.6px 504px,935.5px 522px,935.7px 540px,939.5px 558px,934.3px 576px,932.2px 594px,931.6px 612px,940px 619.1px,922px 616.9px,904px 613.9px,886px 615.8px,868px 616.8px,850px 617.1px,832px 619.3px,814px 616.3px,796px 615.7px,778px 613.6px,760px 615.0px,742px 614.6px,724px 615.7px,706px 613.8px,688px 611.0px,670px 610.5px,652px 615.4px,634px 611.7px,616px 610.2px,598px 613.5px,580px 616.0px,562px 613.7px,544px 619.5px,526px 617.1px,508px 619.7px,490px 611.6px,472px 618.9px,454px 617.6px,436px 613.3px,418px 617.8px,400px 617.3px,382px 618.6px,364px 612.4px,346px 616.9px,328px 613.8px,310px 612.4px,292px 619.9px,274px 611.7px,256px 610.9px,238px 612.3px,220px 610.5px,202px 619.3px,184px 618.2px,166px 619.6px,148px 610.2px,130px 615.2px,112px 617.2px,94px 614.8px,76px 611.6px,58px 612.9px,40px 612.1px,22px 619.9px,4px 618.9px,6.2px 620px,7.5px 602px,0.9px 584px,2.9px 566px,4.1px 548px,7.7px 530px,6.8px 512px,6.3px 494px,1.6px 476px,9.3px 458px,10.0px 440px,6.2px 422px,7.2px 404px,1.6px 386px,8.9px 368px,1.6px 350px,3.4px 332px,7.0px 314px,4.2px 296px,4.6px 278px,9.8px 260px,4.5px 242px,5.5px 224px,6.6px 206px,1.0px 188px,1.7px 170px,1.8px 152px,8.4px 134px,3.4px 116px,10.0px 98px,5.4px 80px,1.3px 62px,4.8px 44px,5.1px 26px,0.1px 8px);"></div>
+        <div style="position:absolute; left:54px; top:44px; width:60px; height:10px; background:#D9352B;"></div>
+        <div class="serif" style="position:absolute; left:54px; right:54px; top:84px; font-size:55px; line-height:1.32;">"As long as they're going to steal it, we want them to steal ours. They'll get sort of <span style="background:#F2C230; padding:0 8px;">addicted</span> — then we'll figure out how to collect."</div>
+        <div style="position:absolute; left:54px; bottom:40px; font-family:'Archivo Narrow'; font-weight:700; font-size:25px; letter-spacing:2px; color:#5A5348; white-space:nowrap;">— ON SOFTWARE PIRACY IN CHINA. THE WHOLE INDUSTRY HEARD IT.</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="sheetw" id="s4w" style="left:-60px; top:0; width:1200px; height:1920px;">
+  <div class="sheet" style="clip-path:polygon(0px 0px,26px 0px,52px 0px,78px 0px,104px 0px,130px 0px,156px 0px,182px 0px,208px 0px,234px 0px,260px 0px,286px 0px,312px 0px,338px 0px,364px 0px,390px 0px,416px 0px,442px 0px,468px 0px,494px 0px,520px 0px,546px 0px,572px 0px,598px 0px,624px 0px,650px 0px,676px 0px,702px 0px,728px 0px,754px 0px,780px 0px,806px 0px,832px 0px,858px 0px,884px 0px,910px 0px,936px 0px,962px 0px,988px 0px,1014px 0px,1040px 0px,1066px 0px,1092px 0px,1118px 0px,1144px 0px,1170px 0px,1196px 0px,1200px 0px,1200px 26px,1200px 52px,1200px 78px,1200px 104px,1200px 130px,1200px 156px,1200px 182px,1200px 208px,1200px 234px,1200px 260px,1200px 286px,1200px 312px,1200px 338px,1200px 364px,1200px 390px,1200px 416px,1200px 442px,1200px 468px,1200px 494px,1200px 520px,1200px 546px,1200px 572px,1200px 598px,1200px 624px,1200px 650px,1200px 676px,1200px 702px,1200px 728px,1200px 754px,1200px 780px,1200px 806px,1200px 832px,1200px 858px,1200px 884px,1200px 910px,1200px 936px,1200px 962px,1200px 988px,1200px 1014px,1200px 1040px,1200px 1066px,1200px 1092px,1200px 1118px,1200px 1144px,1200px 1170px,1200px 1196px,1200px 1222px,1200px 1248px,1200px 1274px,1200px 1300px,1200px 1326px,1200px 1352px,1200px 1378px,1200px 1404px,1200px 1430px,1200px 1456px,1200px 1482px,1200px 1508px,1200px 1534px,1200px 1560px,1200px 1586px,1200px 1612px,1200px 1638px,1200px 1664px,1200px 1690px,1200px 1716px,1200px 1742px,1200px 1768px,1200px 1794px,1200px 1820px,1200px 1846px,1200px 1872px,1200px 1898px,1200px 1920px,1174px 1920px,1148px 1920px,1122px 1920px,1096px 1920px,1070px 1920px,1044px 1920px,1018px 1920px,992px 1920px,966px 1920px,940px 1920px,914px 1920px,888px 1920px,862px 1920px,836px 1920px,810px 1920px,784px 1920px,758px 1920px,732px 1920px,706px 1920px,680px 1920px,654px 1920px,628px 1920px,602px 1920px,576px 1920px,550px 1920px,524px 1920px,498px 1920px,472px 1920px,446px 1920px,420px 1920px,394px 1920px,368px 1920px,342px 1920px,316px 1920px,290px 1920px,264px 1920px,238px 1920px,212px 1920px,186px 1920px,160px 1920px,134px 1920px,108px 1920px,82px 1920px,56px 1920px,30px 1920px,4px 1920px,14.1px 1920px,21.3px 1894px,11.3px 1868px,5.5px 1842px,1.7px 1816px,16.5px 1790px,11.3px 1764px,3.4px 1738px,21.7px 1712px,0.5px 1686px,23.7px 1660px,18.7px 1634px,23.1px 1608px,17.4px 1582px,17.7px 1556px,21.9px 1530px,7.2px 1504px,17.6px 1478px,12.1px 1452px,0.0px 1426px,3.2px 1400px,2.3px 1374px,1.5px 1348px,13.4px 1322px,3.1px 1296px,5.8px 1270px,9.4px 1244px,17.0px 1218px,6.4px 1192px,6.4px 1166px,18.6px 1140px,19.5px 1114px,17.7px 1088px,22.4px 1062px,4.7px 1036px,7.2px 1010px,14.2px 984px,10.5px 958px,15.4px 932px,10.6px 906px,14.3px 880px,22.9px 854px,22.2px 828px,10.6px 802px,9.3px 776px,25.3px 750px,19.2px 724px,24.3px 698px,6.2px 672px,25.0px 646px,24.0px 620px,18.5px 594px,14.8px 568px,16.8px 542px,23.3px 516px,4.7px 490px,12.5px 464px,11.5px 438px,20.0px 412px,19.5px 386px,18.0px 360px,15.9px 334px,0.2px 308px,7.7px 282px,19.8px 256px,14.6px 230px,0.9px 204px,14.3px 178px,24.1px 152px,0.3px 126px,24.8px 100px,17.3px 74px,14.2px 48px,22.4px 22px); background:#E6DCC6; overflow:hidden;">
+    <div style="position:absolute; left:60px; top:0; width:1080px; height:1920px;">
+
+      <div class="serif" id="dict" style="position:absolute; left:80px; top:140px; opacity:0;">
+        <span style="font-size:118px;">photoshop</span> <span style="font-size:44px; color:#D9352B;">— verb.</span>
+        <div style="font-size:42px; margin-top:10px; color:#3A3530;">to edit an image. any image.</div>
+      </div>
+
+      <div id="phclass" style="position:absolute; left:100px; top:520px; width:880px; padding:18px 18px 64px; background:#F4EFE6; transform: rotate(-2deg); opacity:0; box-shadow: 0 22px 40px rgba(0,0,0,0.3);">
+        <div style="width:100%; overflow:hidden;"><img src="assets/img/classroom.jpg" style="width:100%; display:block; filter: grayscale(1) contrast(1.15) sepia(0.2);" alt="" /></div>
+        <div style="position:absolute; left:22px; bottom:16px; font-family:'Permanent Marker',cursive; font-size:30px; color:#3A3530;">learned it at school · free</div>
+        <i style="position:absolute; left:-30px; top:-14px; width:150px; height:44px; background:rgba(235,225,190,0.82); transform: rotate(-28deg);"></i>
+        <i style="position:absolute; right:-34px; top:-10px; width:150px; height:44px; background:rgba(235,225,190,0.82); transform: rotate(24deg);"></i>
+      </div>
+
+      <div class="stamp" id="st2004" style="left:660px; top:1180px;"><div style="background-image:url(assets/img/student2004.jpg); background-position:50% 50%;"></div><b>2004</b></div>
+      <div class="tag " id="t4a" style="left:80px; top:1240px;">A GENERATION LEARNED ON FREE COPIES</div>
+      <div class="sheetw" id="card4" style="left:90px; top:1560px; width:900px; height:300px; opacity:0;"><div class="sheet" style="background:#F4EFE6; clip-path:polygon(0px 9.2px,18px 9.2px,36px 0.6px,54px 7.5px,72px 3.6px,90px 7.0px,108px 0.9px,126px 4.1px,144px 0.8px,162px 3.0px,180px 3.7px,198px 3.2px,216px 3.9px,234px 0.1px,252px 4.0px,270px 4.2px,288px 8.0px,306px 8.2px,324px 0.5px,342px 4.4px,360px 5.7px,378px 6.3px,396px 1.4px,414px 1.2px,432px 4.0px,450px 0.4px,468px 2.8px,486px 6.6px,504px 1.9px,522px 9.7px,540px 8.9px,558px 5.6px,576px 1.6px,594px 4.2px,612px 7.0px,630px 2.8px,648px 4.4px,666px 3.1px,684px 3.9px,702px 2.0px,720px 0.1px,738px 2.2px,756px 6.2px,774px 6.6px,792px 0.3px,810px 9.4px,828px 0.9px,846px 1.1px,864px 7.2px,882px 6.8px,900px 6.8px,894.2px 0px,890.6px 18px,899.4px 36px,897.6px 54px,898.3px 72px,896.3px 90px,896.7px 108px,898.0px 126px,899.7px 144px,898.5px 162px,894.9px 180px,890.3px 198px,898.5px 216px,894.8px 234px,893.7px 252px,898.7px 270px,890.8px 288px,900px 293.3px,882px 292.8px,864px 290.6px,846px 293.1px,828px 298.5px,810px 296.1px,792px 295.5px,774px 297.2px,756px 298.5px,738px 295.9px,720px 292.1px,702px 293.6px,684px 293.2px,666px 291.9px,648px 291.5px,630px 294.6px,612px 300.0px,594px 296.6px,576px 290.4px,558px 293.3px,540px 292.6px,522px 291.7px,504px 296.0px,486px 292.3px,468px 296.4px,450px 294.6px,432px 299.9px,414px 294.4px,396px 300.0px,378px 294.9px,360px 295.1px,342px 296.1px,324px 298.4px,306px 295.0px,288px 298.1px,270px 294.7px,252px 299.0px,234px 299.8px,216px 292.3px,198px 294.4px,180px 291.9px,162px 291.4px,144px 293.3px,126px 292.6px,108px 291.7px,90px 296.1px,72px 290.9px,54px 296.3px,36px 296.3px,18px 299.7px,0px 299.2px,1.0px 300px,0.3px 282px,5.8px 264px,6.8px 246px,2.0px 228px,0.1px 210px,0.4px 192px,6.9px 174px,9.7px 156px,8.9px 138px,8.2px 120px,9.4px 102px,7.4px 84px,5.5px 66px,6.2px 48px,0.7px 30px,3.6px 12px);"></div><div class="serif" style="position:absolute; left:0; right:0; top:34px; text-align:center; font-size:56px; line-height:1.2;">EVERY NEW HIRE KNEW ONE TOOL.<br/><span style="color:#D9352B;">SO THE STUDIOS PAID.</span></div></div>
+
+    </div>
+  </div>
+</div>
+<div class="sheetw" id="s5w" style="left:-60px; top:0; width:1200px; height:1920px;">
+  <div class="sheet" style="clip-path:polygon(0px 0px,26px 0px,52px 0px,78px 0px,104px 0px,130px 0px,156px 0px,182px 0px,208px 0px,234px 0px,260px 0px,286px 0px,312px 0px,338px 0px,364px 0px,390px 0px,416px 0px,442px 0px,468px 0px,494px 0px,520px 0px,546px 0px,572px 0px,598px 0px,624px 0px,650px 0px,676px 0px,702px 0px,728px 0px,754px 0px,780px 0px,806px 0px,832px 0px,858px 0px,884px 0px,910px 0px,936px 0px,962px 0px,988px 0px,1014px 0px,1040px 0px,1066px 0px,1092px 0px,1118px 0px,1144px 0px,1170px 0px,1196px 0px,1200px 0px,1200px 26px,1200px 52px,1200px 78px,1200px 104px,1200px 130px,1200px 156px,1200px 182px,1200px 208px,1200px 234px,1200px 260px,1200px 286px,1200px 312px,1200px 338px,1200px 364px,1200px 390px,1200px 416px,1200px 442px,1200px 468px,1200px 494px,1200px 520px,1200px 546px,1200px 572px,1200px 598px,1200px 624px,1200px 650px,1200px 676px,1200px 702px,1200px 728px,1200px 754px,1200px 780px,1200px 806px,1200px 832px,1200px 858px,1200px 884px,1200px 910px,1200px 936px,1200px 962px,1200px 988px,1200px 1014px,1200px 1040px,1200px 1066px,1200px 1092px,1200px 1118px,1200px 1144px,1200px 1170px,1200px 1196px,1200px 1222px,1200px 1248px,1200px 1274px,1200px 1300px,1200px 1326px,1200px 1352px,1200px 1378px,1200px 1404px,1200px 1430px,1200px 1456px,1200px 1482px,1200px 1508px,1200px 1534px,1200px 1560px,1200px 1586px,1200px 1612px,1200px 1638px,1200px 1664px,1200px 1690px,1200px 1716px,1200px 1742px,1200px 1768px,1200px 1794px,1200px 1820px,1200px 1846px,1200px 1872px,1200px 1898px,1200px 1920px,1174px 1920px,1148px 1920px,1122px 1920px,1096px 1920px,1070px 1920px,1044px 1920px,1018px 1920px,992px 1920px,966px 1920px,940px 1920px,914px 1920px,888px 1920px,862px 1920px,836px 1920px,810px 1920px,784px 1920px,758px 1920px,732px 1920px,706px 1920px,680px 1920px,654px 1920px,628px 1920px,602px 1920px,576px 1920px,550px 1920px,524px 1920px,498px 1920px,472px 1920px,446px 1920px,420px 1920px,394px 1920px,368px 1920px,342px 1920px,316px 1920px,290px 1920px,264px 1920px,238px 1920px,212px 1920px,186px 1920px,160px 1920px,134px 1920px,108px 1920px,82px 1920px,56px 1920px,30px 1920px,4px 1920px,12.3px 1920px,13.7px 1894px,13.4px 1868px,15.4px 1842px,16.7px 1816px,13.1px 1790px,18.9px 1764px,8.8px 1738px,22.2px 1712px,0.4px 1686px,1.1px 1660px,17.4px 1634px,25.5px 1608px,5.3px 1582px,0.2px 1556px,5.6px 1530px,1.0px 1504px,11.6px 1478px,17.5px 1452px,16.0px 1426px,10.7px 1400px,22.1px 1374px,1.0px 1348px,21.7px 1322px,22.6px 1296px,11.5px 1270px,8.9px 1244px,5.4px 1218px,16.6px 1192px,2.4px 1166px,7.6px 1140px,17.2px 1114px,2.1px 1088px,14.7px 1062px,24.1px 1036px,0.5px 1010px,23.6px 984px,6.4px 958px,15.7px 932px,0.9px 906px,23.3px 880px,16.2px 854px,6.6px 828px,16.0px 802px,9.1px 776px,13.4px 750px,10.8px 724px,25.0px 698px,21.3px 672px,24.9px 646px,22.8px 620px,1.3px 594px,7.0px 568px,13.1px 542px,14.0px 516px,3.3px 490px,15.2px 464px,6.3px 438px,10.3px 412px,15.9px 386px,21.9px 360px,9.2px 334px,3.0px 308px,4.5px 282px,6.2px 256px,1.3px 230px,23.8px 204px,19.0px 178px,17.1px 152px,21.7px 126px,1.8px 100px,15.9px 74px,22.7px 48px,3.4px 22px); background:#1F1D1B; overflow:hidden;">
+    <div style="position:absolute; left:60px; top:0; width:1080px; height:1920px;">
+      <div class="t3d" id="playttl" style="left:0; right:0; top:210px; text-align:center; font-size:104px; line-height:1.12;">THE PHOTOSHOP<br/>PLAY</div>
+      <div class="stepc" id="step1" style="position:absolute; left:100px; top:640px; width:880px; height:200px; background:#F4EFE6; opacity:0; box-shadow: 0 18px 26px rgba(0,0,0,0.35);">
+        <div class="serif" style="position:absolute; left:0; right:0; top:52px; text-align:center; font-size:56px; white-space:nowrap;">1 · GIVE IT AWAY</div>
+      </div>
+      <div class="stepc" id="step2" style="position:absolute; left:100px; top:920px; width:880px; height:200px; background:#F4EFE6; opacity:0; box-shadow: 0 18px 26px rgba(0,0,0,0.35);">
+        <div class="serif" style="position:absolute; left:0; right:0; top:52px; text-align:center; font-size:56px; white-space:nowrap;">2 · BECOME THE STANDARD</div>
+      </div>
+      <div class="stepc" id="step3" style="position:absolute; left:100px; top:1200px; width:880px; height:200px; background:#D9352B; opacity:0; box-shadow: 0 18px 26px rgba(0,0,0,0.35);">
+        <div class="serif" style="position:absolute; left:0; right:0; top:52px; text-align:center; font-size:56px; white-space:nowrap; color:#F4EFE6;">3 · CHARGE RENT FOREVER</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="sheetw" id="s6w" style="left:-60px; top:0; width:1200px; height:1920px;">
+  <div class="sheet" style="clip-path:polygon(0px 0px,26px 0px,52px 0px,78px 0px,104px 0px,130px 0px,156px 0px,182px 0px,208px 0px,234px 0px,260px 0px,286px 0px,312px 0px,338px 0px,364px 0px,390px 0px,416px 0px,442px 0px,468px 0px,494px 0px,520px 0px,546px 0px,572px 0px,598px 0px,624px 0px,650px 0px,676px 0px,702px 0px,728px 0px,754px 0px,780px 0px,806px 0px,832px 0px,858px 0px,884px 0px,910px 0px,936px 0px,962px 0px,988px 0px,1014px 0px,1040px 0px,1066px 0px,1092px 0px,1118px 0px,1144px 0px,1170px 0px,1196px 0px,1200px 0px,1200px 26px,1200px 52px,1200px 78px,1200px 104px,1200px 130px,1200px 156px,1200px 182px,1200px 208px,1200px 234px,1200px 260px,1200px 286px,1200px 312px,1200px 338px,1200px 364px,1200px 390px,1200px 416px,1200px 442px,1200px 468px,1200px 494px,1200px 520px,1200px 546px,1200px 572px,1200px 598px,1200px 624px,1200px 650px,1200px 676px,1200px 702px,1200px 728px,1200px 754px,1200px 780px,1200px 806px,1200px 832px,1200px 858px,1200px 884px,1200px 910px,1200px 936px,1200px 962px,1200px 988px,1200px 1014px,1200px 1040px,1200px 1066px,1200px 1092px,1200px 1118px,1200px 1144px,1200px 1170px,1200px 1196px,1200px 1222px,1200px 1248px,1200px 1274px,1200px 1300px,1200px 1326px,1200px 1352px,1200px 1378px,1200px 1404px,1200px 1430px,1200px 1456px,1200px 1482px,1200px 1508px,1200px 1534px,1200px 1560px,1200px 1586px,1200px 1612px,1200px 1638px,1200px 1664px,1200px 1690px,1200px 1716px,1200px 1742px,1200px 1768px,1200px 1794px,1200px 1820px,1200px 1846px,1200px 1872px,1200px 1898px,1200px 1920px,1174px 1920px,1148px 1920px,1122px 1920px,1096px 1920px,1070px 1920px,1044px 1920px,1018px 1920px,992px 1920px,966px 1920px,940px 1920px,914px 1920px,888px 1920px,862px 1920px,836px 1920px,810px 1920px,784px 1920px,758px 1920px,732px 1920px,706px 1920px,680px 1920px,654px 1920px,628px 1920px,602px 1920px,576px 1920px,550px 1920px,524px 1920px,498px 1920px,472px 1920px,446px 1920px,420px 1920px,394px 1920px,368px 1920px,342px 1920px,316px 1920px,290px 1920px,264px 1920px,238px 1920px,212px 1920px,186px 1920px,160px 1920px,134px 1920px,108px 1920px,82px 1920px,56px 1920px,30px 1920px,4px 1920px,11.7px 1920px,9.4px 1894px,20.1px 1868px,17.2px 1842px,24.7px 1816px,1.0px 1790px,3.5px 1764px,22.3px 1738px,21.9px 1712px,16.1px 1686px,2.9px 1660px,13.0px 1634px,11.6px 1608px,19.3px 1582px,16.9px 1556px,6.9px 1530px,2.2px 1504px,2.5px 1478px,11.1px 1452px,24.4px 1426px,17.2px 1400px,21.3px 1374px,23.7px 1348px,22.2px 1322px,19.2px 1296px,8.6px 1270px,17.8px 1244px,19.5px 1218px,18.9px 1192px,13.2px 1166px,16.6px 1140px,18.3px 1114px,15.3px 1088px,4.6px 1062px,22.9px 1036px,18.9px 1010px,5.4px 984px,9.7px 958px,3.7px 932px,22.2px 906px,5.6px 880px,9.4px 854px,22.6px 828px,18.2px 802px,19.3px 776px,2.6px 750px,17.5px 724px,21.0px 698px,0.0px 672px,19.0px 646px,10.4px 620px,4.7px 594px,0.5px 568px,5.9px 542px,12.0px 516px,25.6px 490px,15.5px 464px,16.4px 438px,0.9px 412px,10.9px 386px,5.5px 360px,24.9px 334px,2.6px 308px,6.1px 282px,16.7px 256px,7.3px 230px,24.6px 204px,4.1px 178px,6.0px 152px,21.7px 126px,10.7px 100px,25.6px 74px,7.0px 48px,1.1px 22px); background:#ECE4D4; overflow:hidden;">
+    <div style="position:absolute; left:60px; top:0; width:1080px; height:1920px;">
+
+      <div id="phhq" style="position:absolute; left:90px; top:150px; width:900px; padding:18px 18px 64px; background:#F4EFE6; transform: rotate(1.5deg); opacity:0; box-shadow: 0 22px 40px rgba(0,0,0,0.3);">
+        <div style="width:100%; overflow:hidden;"><img src="assets/img/adobehq.jpg" style="width:100%; display:block; filter: grayscale(1) contrast(1.15) sepia(0.2);" alt="" /></div>
+        <div style="position:absolute; left:22px; bottom:16px; font-family:'Permanent Marker',cursive; font-size:30px; color:#3A3530;">Adobe HQ · San Jose</div>
+        <i style="position:absolute; left:-30px; top:-14px; width:150px; height:44px; background:rgba(235,225,190,0.82); transform: rotate(-28deg);"></i>
+        <i style="position:absolute; right:-34px; top:-10px; width:150px; height:44px; background:rgba(235,225,190,0.82); transform: rotate(24deg);"></i>
+      </div>
+
+      <div class="tag r" id="t6a" style="left:830px; top:830px;">2013</div>
+
+      <div class="sheetw" id="boxcard" style="left:80px; top:900px; width:500px; height:360px; opacity:0;"><div class="sheet" style="background:#F4EFE6; clip-path:polygon(0px 8.2px,18px 4.2px,36px 3.7px,54px 9.1px,72px 6.3px,90px 7.1px,108px 6.7px,126px 3.4px,144px 8.9px,162px 7.3px,180px 0.0px,198px 5.2px,216px 0.5px,234px 4.8px,252px 3.5px,270px 7.2px,288px 4.9px,306px 0.1px,324px 9.6px,342px 9.0px,360px 7.7px,378px 5.1px,396px 5.9px,414px 5.4px,432px 6.9px,450px 8.3px,468px 3.2px,486px 6.8px,490.6px 0px,492.9px 18px,492.6px 36px,491.8px 54px,493.0px 72px,491.4px 90px,499.0px 108px,494.6px 126px,495.9px 144px,490.6px 162px,498.4px 180px,492.6px 198px,496.8px 216px,494.7px 234px,495.4px 252px,499.7px 270px,493.4px 288px,499.3px 306px,495.4px 324px,499.0px 342px,499.6px 360px,500px 358.2px,482px 354.3px,464px 353.0px,446px 351.7px,428px 357.9px,410px 359.4px,392px 356.1px,374px 359.4px,356px 351.0px,338px 351.6px,320px 354.6px,302px 350.6px,284px 350.2px,266px 351.5px,248px 358.1px,230px 352.7px,212px 354.9px,194px 350.1px,176px 357.5px,158px 351.4px,140px 358.5px,122px 350.2px,104px 355.9px,86px 355.1px,68px 359.6px,50px 357.7px,32px 354.9px,14px 352.6px,8.6px 360px,3.7px 342px,5.5px 324px,8.0px 306px,5.0px 288px,9.8px 270px,6.6px 252px,4.6px 234px,5.0px 216px,3.5px 198px,3.2px 180px,0.3px 162px,4.9px 144px,3.5px 126px,3.9px 108px,8.0px 90px,5.4px 72px,8.9px 54px,1.3px 36px,2.4px 18px,8.0px 0px);"></div><div class="serif" style="position:absolute; left:0; right:0; top:110px; text-align:center; font-size:76px;">THE BOX</div></div>
+
+      <svg width="1080" height="1920" style="position:absolute; inset:0; overflow:visible;"><path class="mk" id="boxx1" d="M 120 950 L 540 1210" /><path class="mk" id="boxx2" d="M 540 950 L 120 1210" /></svg>
+
+      <div class="sign" id="ccsign" style="left:420px; top:1010px; transform: rotate(-4deg);">CREATIVE CLOUD</div>
+
+      <div class="sheetw" id="statscard" style="left:70px; top:1420px; width:940px; height:360px; opacity:0;"><div class="sheet" style="background:#F4EFE6; clip-path:polygon(0px 2.6px,18px 5.8px,36px 4.2px,54px 6.8px,72px 5.1px,90px 3.2px,108px 1.2px,126px 4.0px,144px 5.0px,162px 7.5px,180px 1.1px,198px 8.2px,216px 1.4px,234px 9.1px,252px 4.0px,270px 5.9px,288px 5.4px,306px 4.6px,324px 5.6px,342px 0.0px,360px 4.3px,378px 9.1px,396px 4.5px,414px 7.2px,432px 5.0px,450px 0.5px,468px 4.7px,486px 4.4px,504px 9.7px,522px 4.3px,540px 3.8px,558px 2.1px,576px 1.0px,594px 4.3px,612px 7.6px,630px 2.8px,648px 9.8px,666px 2.0px,684px 2.6px,702px 8.8px,720px 6.2px,738px 9.3px,756px 8.3px,774px 8.8px,792px 4.2px,810px 2.5px,828px 5.0px,846px 2.1px,864px 7.4px,882px 6.4px,900px 3.8px,918px 7.9px,936px 5.7px,930.2px 0px,939.3px 18px,931.6px 36px,933.4px 54px,933.9px 72px,936.8px 90px,935.8px 108px,931.9px 126px,930.1px 144px,933.9px 162px,934.1px 180px,932.1px 198px,938.1px 216px,934.1px 234px,936.2px 252px,931.0px 270px,933.1px 288px,931.0px 306px,937.8px 324px,932.4px 342px,931.8px 360px,940px 359.3px,922px 353.0px,904px 351.6px,886px 353.3px,868px 359.8px,850px 358.7px,832px 354.4px,814px 354.1px,796px 359.9px,778px 358.7px,760px 351.3px,742px 354.7px,724px 358.4px,706px 354.1px,688px 353.6px,670px 359.8px,652px 354.4px,634px 357.3px,616px 356.8px,598px 356.3px,580px 354.2px,562px 354.9px,544px 351.9px,526px 358.2px,508px 350.9px,490px 355.5px,472px 355.0px,454px 350.8px,436px 353.6px,418px 351.6px,400px 358.6px,382px 350.4px,364px 359.0px,346px 352.0px,328px 356.1px,310px 357.9px,292px 354.3px,274px 354.6px,256px 352.9px,238px 359.1px,220px 351.1px,202px 356.1px,184px 352.0px,166px 352.1px,148px 353.1px,130px 354.1px,112px 351.2px,94px 358.6px,76px 355.1px,58px 351.4px,40px 352.9px,22px 357.2px,4px 356.4px,8.1px 360px,5.1px 342px,2.7px 324px,6.5px 306px,6.2px 288px,5.9px 270px,2.9px 252px,9.0px 234px,9.6px 216px,2.1px 198px,8.2px 180px,9.5px 162px,8.6px 144px,1.8px 126px,2.2px 108px,1.3px 90px,3.5px 72px,6.9px 54px,9.2px 36px,0.2px 18px,8.6px 0px);"></div><div style="position:absolute; left:44px; top:30px; font-family:'Archivo Narrow'; font-weight:700; font-size:25px; letter-spacing:2px; color:#5A5348;">ADOBE REVENUE · PER YEAR</div><div class="serif" id="stat1" style="position:absolute; left:44px; top:78px; font-size:74px; opacity:0;">$4.4 BILLION <span style="font-size:34px; color:#5A5348;">· 2012</span></div><div class="serif" id="stat2" style="position:absolute; left:44px; top:196px; font-size:74px; opacity:0;">$21.5 BILLION <span style="font-size:34px; color:#5A5348;">· 2024</span></div></div>
+
+    </div>
+  </div>
+</div>
+<div class="sheetw" id="s7w" style="left:-60px; top:0; width:1200px; height:1920px;">
+  <div class="sheet" style="clip-path:polygon(0px 0px,26px 0px,52px 0px,78px 0px,104px 0px,130px 0px,156px 0px,182px 0px,208px 0px,234px 0px,260px 0px,286px 0px,312px 0px,338px 0px,364px 0px,390px 0px,416px 0px,442px 0px,468px 0px,494px 0px,520px 0px,546px 0px,572px 0px,598px 0px,624px 0px,650px 0px,676px 0px,702px 0px,728px 0px,754px 0px,780px 0px,806px 0px,832px 0px,858px 0px,884px 0px,910px 0px,936px 0px,962px 0px,988px 0px,1014px 0px,1040px 0px,1066px 0px,1092px 0px,1118px 0px,1144px 0px,1170px 0px,1196px 0px,1200px 0px,1200px 26px,1200px 52px,1200px 78px,1200px 104px,1200px 130px,1200px 156px,1200px 182px,1200px 208px,1200px 234px,1200px 260px,1200px 286px,1200px 312px,1200px 338px,1200px 364px,1200px 390px,1200px 416px,1200px 442px,1200px 468px,1200px 494px,1200px 520px,1200px 546px,1200px 572px,1200px 598px,1200px 624px,1200px 650px,1200px 676px,1200px 702px,1200px 728px,1200px 754px,1200px 780px,1200px 806px,1200px 832px,1200px 858px,1200px 884px,1200px 910px,1200px 936px,1200px 962px,1200px 988px,1200px 1014px,1200px 1040px,1200px 1066px,1200px 1092px,1200px 1118px,1200px 1144px,1200px 1170px,1200px 1196px,1200px 1222px,1200px 1248px,1200px 1274px,1200px 1300px,1200px 1326px,1200px 1352px,1200px 1378px,1200px 1404px,1200px 1430px,1200px 1456px,1200px 1482px,1200px 1508px,1200px 1534px,1200px 1560px,1200px 1586px,1200px 1612px,1200px 1638px,1200px 1664px,1200px 1690px,1200px 1716px,1200px 1742px,1200px 1768px,1200px 1794px,1200px 1820px,1200px 1846px,1200px 1872px,1200px 1898px,1200px 1920px,1174px 1920px,1148px 1920px,1122px 1920px,1096px 1920px,1070px 1920px,1044px 1920px,1018px 1920px,992px 1920px,966px 1920px,940px 1920px,914px 1920px,888px 1920px,862px 1920px,836px 1920px,810px 1920px,784px 1920px,758px 1920px,732px 1920px,706px 1920px,680px 1920px,654px 1920px,628px 1920px,602px 1920px,576px 1920px,550px 1920px,524px 1920px,498px 1920px,472px 1920px,446px 1920px,420px 1920px,394px 1920px,368px 1920px,342px 1920px,316px 1920px,290px 1920px,264px 1920px,238px 1920px,212px 1920px,186px 1920px,160px 1920px,134px 1920px,108px 1920px,82px 1920px,56px 1920px,30px 1920px,4px 1920px,12.9px 1920px,1.5px 1894px,1.0px 1868px,11.2px 1842px,15.3px 1816px,0.1px 1790px,10.3px 1764px,11.1px 1738px,7.9px 1712px,11.6px 1686px,18.4px 1660px,6.0px 1634px,0.1px 1608px,25.1px 1582px,20.6px 1556px,18.4px 1530px,24.1px 1504px,10.2px 1478px,5.2px 1452px,9.3px 1426px,1.2px 1400px,19.1px 1374px,26.0px 1348px,25.8px 1322px,5.0px 1296px,11.7px 1270px,15.0px 1244px,10.2px 1218px,5.3px 1192px,20.8px 1166px,19.8px 1140px,10.7px 1114px,0.8px 1088px,15.5px 1062px,6.1px 1036px,6.7px 1010px,24.1px 984px,15.3px 958px,23.0px 932px,0.7px 906px,19.5px 880px,17.3px 854px,18.8px 828px,0.0px 802px,8.9px 776px,19.5px 750px,12.6px 724px,23.7px 698px,3.5px 672px,8.4px 646px,0.5px 620px,5.4px 594px,16.5px 568px,21.3px 542px,2.5px 516px,23.1px 490px,11.9px 464px,7.8px 438px,12.3px 412px,7.7px 386px,20.7px 360px,7.2px 334px,9.0px 308px,10.5px 282px,4.4px 256px,5.2px 230px,7.2px 204px,25.1px 178px,25.5px 152px,2.9px 126px,16.1px 100px,14.5px 74px,16.5px 48px,15.8px 22px); background:#1F1D1B; overflow:hidden;">
+    <div style="position:absolute; left:60px; top:0; width:1080px; height:1920px;">
+
+      <div id="phstudent" style="position:absolute; left:160px; top:130px; width:760px; padding:18px 18px 64px; background:#F4EFE6; transform: rotate(2deg); opacity:0; box-shadow: 0 22px 40px rgba(0,0,0,0.3);">
+        <div style="width:100%; overflow:hidden;"><img src="assets/img/student.jpg" style="width:100%; display:block; filter: grayscale(1) contrast(1.15) sepia(0.2);" alt="" /></div>
+        <div style="position:absolute; left:22px; bottom:16px; font-family:'Permanent Marker',cursive; font-size:30px; color:#3A3530;">you · right now</div>
+        <i style="position:absolute; left:-30px; top:-14px; width:150px; height:44px; background:rgba(235,225,190,0.82); transform: rotate(-28deg);"></i>
+        <i style="position:absolute; right:-34px; top:-10px; width:150px; height:44px; background:rgba(235,225,190,0.82); transform: rotate(24deg);"></i>
+      </div>
+
+      <div class="tag y" id="t7a" style="left:90px; top:830px;">FREE AI TOOLS</div>
+      <div class="tag " id="t7b" style="left:620px; top:830px;">FREE TIERS</div>
+      <div class="tag r" id="t7c" style="left:330px; top:950px;">FREE CREDITS</div>
+
+      <div id="phtoll" style="position:absolute; left:230px; top:1090px; width:620px; padding:18px 18px 64px; background:#F4EFE6; transform: rotate(-2deg); opacity:0; box-shadow: 0 22px 40px rgba(0,0,0,0.3);">
+        <div style="width:100%; overflow:hidden;"><img src="assets/img/toll.jpg" style="width:100%; display:block; filter: grayscale(1) contrast(1.15) sepia(0.2);" alt="" /></div>
+        <div style="position:absolute; left:22px; bottom:16px; font-family:'Permanent Marker',cursive; font-size:30px; color:#3A3530;">the toll booth</div>
+        <i style="position:absolute; left:-30px; top:-14px; width:150px; height:44px; background:rgba(235,225,190,0.82); transform: rotate(-28deg);"></i>
+        <i style="position:absolute; right:-34px; top:-10px; width:150px; height:44px; background:rgba(235,225,190,0.82); transform: rotate(24deg);"></i>
+      </div>
+
+      <div class="sheetw" id="qcard" style="left:70px; top:1300px; width:940px; height:400px; opacity:0;"><div class="sheet" style="background:#F4EFE6; clip-path:polygon(0px 0.8px,18px 9.3px,36px 7.8px,54px 2.8px,72px 8.0px,90px 9.5px,108px 1.0px,126px 7.2px,144px 8.2px,162px 4.2px,180px 3.3px,198px 7.7px,216px 9.5px,234px 8.5px,252px 8.9px,270px 8.9px,288px 3.2px,306px 4.2px,324px 1.2px,342px 4.3px,360px 0.8px,378px 0.1px,396px 9.8px,414px 8.5px,432px 8.7px,450px 9.2px,468px 3.3px,486px 6.5px,504px 5.9px,522px 8.1px,540px 2.0px,558px 1.2px,576px 9.7px,594px 9.8px,612px 8.1px,630px 1.9px,648px 9.7px,666px 4.4px,684px 4.8px,702px 6.5px,720px 2.7px,738px 9.8px,756px 2.2px,774px 0.2px,792px 0.6px,810px 3.9px,828px 6.9px,846px 3.1px,864px 7.0px,882px 7.1px,900px 0.5px,918px 7.8px,936px 2.0px,938.2px 0px,931.8px 18px,935.5px 36px,938.4px 54px,939.7px 72px,937.7px 90px,937.5px 108px,936.1px 126px,933.2px 144px,932.8px 162px,933.8px 180px,937.4px 198px,937.3px 216px,937.5px 234px,933.4px 252px,939.1px 270px,938.8px 288px,939.7px 306px,934.4px 324px,934.1px 342px,938.2px 360px,933.7px 378px,935.7px 396px,940px 398.1px,922px 398.9px,904px 398.4px,886px 392.4px,868px 394.7px,850px 390.7px,832px 392.5px,814px 392.8px,796px 398.3px,778px 397.9px,760px 398.0px,742px 398.0px,724px 396.1px,706px 391.7px,688px 397.9px,670px 395.9px,652px 393.0px,634px 394.4px,616px 399.2px,598px 391.6px,580px 397.0px,562px 397.3px,544px 396.7px,526px 397.9px,508px 394.1px,490px 393.4px,472px 392.0px,454px 392.3px,436px 399.7px,418px 398.9px,400px 398.2px,382px 397.7px,364px 391.0px,346px 392.5px,328px 398.6px,310px 391.2px,292px 390.4px,274px 390.4px,256px 391.6px,238px 393.2px,220px 393.2px,202px 393.6px,184px 391.7px,166px 395.3px,148px 391.5px,130px 398.4px,112px 397.1px,94px 397.0px,76px 396.6px,58px 394.8px,40px 397.1px,22px 399.2px,4px 397.1px,1.9px 400px,7.3px 382px,1.4px 364px,4.8px 346px,8.6px 328px,2.2px 310px,1.7px 292px,9.6px 274px,9.0px 256px,9.8px 238px,3.3px 220px,1.6px 202px,4.8px 184px,1.4px 166px,2.6px 148px,6.6px 130px,4.9px 112px,2.2px 94px,2.6px 76px,3.5px 58px,5.5px 40px,8.1px 22px,4.4px 4px);"></div>
+        <div style="position:absolute; left:44px; top:26px; font-family:'Archivo Narrow'; font-weight:700; font-size:25px; letter-spacing:2px; color:#D9352B;">SO WHAT DO YOU THINK?</div>
+        <div class="serif" style="position:absolute; left:44px; right:44px; top:78px; font-size:57px; line-height:1.25;">Are AI tools running<br/>the Photoshop Play<br/>on you?</div>
+      </div>
+
+      <div class="tag w" id="tfollow" style="left:190px; top:1715px;">FOLLOW FOR MORE BREAKDOWNS LIKE THIS</div>
+      <div class="tag r" id="tchip" style="left:330px; top:1780px;">@SHIVANSH.CREATES.AI</div>
+
+    </div>
+  </div>
+</div>
+      </div>
+      <div id="grain"></div>
+      <div id="vig"></div>
+    </div>
+  </div>
+  <script>
+    window.__timelines = window.__timelines || {};
+    const tl = gsap.timeline({ paused: true });
+    
+    // stop-motion: hold each pose for 1/12s
+    const sm = (base, d) => { const e = gsap.parseEase(base), n = Math.max(1, Math.round(d * 12)); return (p) => e(p >= 1 ? 1 : Math.floor(p * n) / n); };
+    // slide/drop a piece in from an offset: enter("#train", 0.2, { x: -900, rotation: -8 })
+    const enter = (sel, at, from, d, base) => { d = d || 0.42; tl.fromTo(sel, Object.assign({ opacity: 1 }, from), { opacity: 1, x: 0, y: 0, rotation: (from && from.end) || 0, scale: 1, duration: d, ease: sm(base || "back.out(1.4)", d), immediateRender: false }, at); };
+    const pop = (sel, at, r) => tl.fromTo(sel, { opacity: 0, scale: 0.6, rotation: r || 0 }, { opacity: 1, scale: 1, rotation: 0, duration: 0.25, ease: sm("back.out(2.4)", 0.25), immediateRender: false }, at);
+    // slam: for big titles and stamps landing hard
+    const slam = (sel, at, rot) => tl.fromTo(sel, { opacity: 0, scale: 2, rotation: (rot || 0) + 8 }, { opacity: 1, scale: 1, rotation: rot || 0, duration: 0.2, ease: "power4.in", immediateRender: false }, at);
+    // hand-drawn marker: draw("#circle1", 3.2, 0.35) on a <path class="mk">
+    const draw = (sel, at, d) => { const el = document.querySelector(sel); const L = el.getTotalLength(); tl.fromTo(sel, { strokeDasharray: L, strokeDashoffset: L, opacity: 1 }, { strokeDashoffset: 0, opacity: 1, duration: d, ease: "power1.inOut", immediateRender: false }, at); };
+    // reveal a dotted route made with route(): drawRoute("r1", 6.7, 0.7)
+    const drawRoute = (id, at, d) => { const el = document.getElementById(id); const L = el.getTotalLength(); tl.fromTo(el, { strokeDasharray: L, strokeDashoffset: L }, { strokeDashoffset: 0, duration: d, ease: "power1.inOut", immediateRender: true }, at); };
+    const count = (sel, from, to, at, d) => { const o = { n: from }; tl.fromTo(o, { n: from }, { n: to, duration: d, ease: "power2.out", immediateRender: false, onUpdate: () => { document.querySelector(sel).textContent = Math.round(o.n); } }, at); };
+    // a torn sheet sliding over the previous scene: sheetIn("#s2w", 4.05, "x", 2040)
+    const sheetIn = (sel, at, axis, from) => tl.fromTo(sel, { [axis]: from }, { [axis]: 0, immediateRender: true, duration: 0.42, ease: "power3.inOut" }, at);
+    // dive into a point until it fills the frame: dive("#zoomLayer", 7.0, 1.6, [eyeX, eyeY], 60, [W, H])
+    const dive = (sel, at, d, pt, scale, frame) => tl.fromTo(sel, { scale: 1, x: 0, y: 0 }, { scale: scale, x: frame[0] / 2 - pt[0], y: frame[1] / 2 - pt[1], transformOrigin: pt[0] + "px " + pt[1] + "px", duration: d, ease: "expo.in", immediateRender: false }, at);
+    const boil = (DUR) => {
+      const bits = Array.from(document.querySelectorAll(".cut, .tag, .sign, .stamp"));
+      const h = (a, b) => { const x = Math.sin(a * 127.1 + b * 311.7) * 43758.5453; return x - Math.floor(x) - 0.5; };
+      const c = { t: 0 };
+      tl.fromTo(c, { t: 0 }, { t: DUR, duration: DUR, ease: "none", immediateRender: true, onUpdate: () => {
+        const k = Math.floor(c.t * 12);
+        bits.forEach((el, i) => { el.style.translate = (h(i, k) * 2.2).toFixed(2) + "px " + (h(i + 50, k) * 2.2).toFixed(2) + "px"; el.style.rotate = (h(i + 99, k) * 0.7).toFixed(2) + "deg"; });
+        const g = document.getElementById("grain"); if (g) g.style.translate = Math.round(h(1, k) * 60) + "px " + Math.round(h(2, k) * 60) + "px";
+      } }, 0);
+    };
+    boil(75.67);
+// Scene 1
+tl.fromTo("#cam", { scale: 1.06 }, { scale: 1, transformOrigin: "540px 900px", duration: 3.2, ease: "power2.out", immediateRender: true }, 0);
+tl.fromTo("#s1sun", { opacity: 1, scale: 0 }, { opacity: 1, scale: 1, duration: 0.4, ease: sm("back.out(1.6)", 0.4), immediateRender: false }, 0.15);
+tl.to("#s1sun", { scale: 1.08, duration: 4.2, ease: "sine.inOut", yoyo: true, repeat: 1, immediateRender: false }, 0.6);
+pop("#ttl", 0.3, -3) ;
+tl.fromTo("#hookcard", { opacity: 1, y: 480, rotation: 4.5 }, { opacity: 1, y: 0, rotation: -1.5, duration: 0.45, ease: sm("back.out(1.3)", 0.45), immediateRender: false }, 0.5) ;
+tl.fromTo("#phmac", { opacity: 1, y: 760, rotation: 6 }, { opacity: 1, y: 0, rotation: -3, duration: 0.45, ease: sm("back.out(1.3)", 0.45), immediateRender: false }, 1.0)  ;
+pop("#stnews", 5.6, -14) ;
+pop("#tbro", 7.55, 2) ;
+tl.to("#phmac", { x: 14, duration: 4.4, ease: "sine.inOut", yoyo: true, repeat: 1, immediateRender: false }, 1.8);
+tl.to("#hookcard", { y: -10, duration: 5.0, ease: "sine.inOut", yoyo: true, repeat: 1, immediateRender: false }, 1.2);
+tl.fromTo("#pricecard", { opacity: 1, y: 480, rotation: 7.5 }, { opacity: 1, y: 0, rotation: 1.5, duration: 0.45, ease: sm("back.out(1.3)", 0.45), immediateRender: false }, 2.55)    ;
+tl.set("#s1", { opacity: 0 }, 9.75);
+sheetIn("#s2w", 9.15, "x", 1260);  
+tl.fromTo("#cam", { scale: 1 }, { scale: 1.035, transformOrigin: "540px 1000px", duration: 8.6, ease: "power1.inOut", immediateRender: false }, 9.2);
+pop("#h2", 9.65, -2); 
+tl.fromTo("#phfloppy", { opacity: 1, x: -950, rotation: -8 }, { opacity: 1, x: 0, rotation: 2, duration: 0.45, ease: sm("back.out(1.3)", 0.45), immediateRender: false }, 9.9); 
+tl.fromTo("#phcds", { opacity: 1, y: 760, rotation: 5 }, { opacity: 1, y: 0, rotation: -4, duration: 0.45, ease: sm("back.out(1.3)", 0.45), immediateRender: false }, 10.9);  
+tl.fromTo("#card2", { opacity: 1, y: 480, rotation: 7 }, { opacity: 1, y: 0, rotation: 1, duration: 0.45, ease: sm("back.out(1.3)", 0.45), immediateRender: false }, 11.9); 
+pop("#t2a", 14.6, -2); 
+pop("#t2b", 15.35, 2); 
+pop("#t2c", 16.3, -2); 
+tl.to("#card2", { scale: 1.02, duration: 0.16, ease: "power2.out", yoyo: true, repeat: 1, immediateRender: false }, 17.05); 
+tl.to("#phfloppy", { x: -12, duration: 3.6, ease: "sine.inOut", yoyo: true, repeat: 1 }, 11.2);
+tl.to("#phcds", { y: -12, duration: 4.0, ease: "sine.inOut", yoyo: true, repeat: 1 }, 11.8);
+tl.set("#s2w", { opacity: 0 }, 18.75); // after scene 3 sheet covers it
+// Scene 3
+sheetIn("#s3w", 18.2, "x", 1260)  ;
+tl.fromTo("#cam", { scale: 1.035 }, { scale: 1.06, transformOrigin: "540px 800px", duration: 9.5, ease: "power1.inOut", immediateRender: false }, 18.25);
+enter("#gatescut", 18.5, { x: 950, rotation: 7 }, 0.5)  ;
+pop("#tg1", 18.85, -2) ;
+pop("#tg2", 19.35, 2) ;
+pop("#stg98", 20.0, -14) ;
+tl.fromTo("#quotecard", { opacity: 1, y: 480, rotation: 5 }, { opacity: 1, y: 0, rotation: -1, duration: 0.45, ease: sm("back.out(1.3)", 0.45), immediateRender: false }, 21.8) ;
+tl.to("#quotecard", { scale: 1.02, duration: 0.16, ease: "power2.out", yoyo: true, repeat: 1, immediateRender: false }, 25.8) ;
+tl.to("#gatescut", { y: 12, duration: 4.6, ease: "sine.inOut", yoyo: true, repeat: 1, immediateRender: false }, 19.4);
+tl.set("#s3w", { opacity: 0 }, 28.85);
+// Scene 4
+sheetIn("#s4w", 28.30, "x", 1260)  ;
+tl.fromTo("#cam", { scale: 1.06 }, { scale: 1.02, transformOrigin: "540px 900px", duration: 11.5, ease: "power1.inOut", immediateRender: false }, 28.35);
+tl.fromTo("#dict", { opacity: 0, x: -90 }, { opacity: 1, x: 0, duration: 0.35, ease: sm("power3.out", 0.35), immediateRender: false }, 28.75) ;
+tl.fromTo("#phclass", { opacity: 1, y: 760, rotation: 7 }, { opacity: 1, y: 0, rotation: -2, duration: 0.45, ease: sm("back.out(1.3)", 0.45), immediateRender: false }, 29.3)  ;
+pop("#st2004", 31.2, 12) ;
+pop("#t4a", 32.3, -2) ;
+tl.fromTo("#card4", { opacity: 1, y: 480, rotation: 4.5 }, { opacity: 1, y: 0, rotation: -1.5, duration: 0.45, ease: sm("back.out(1.3)", 0.45), immediateRender: false }, 35.7) ;
+tl.to("#card4", { scale: 1.02, duration: 0.35, ease: "sine.inOut", yoyo: true, repeat: 1, immediateRender: false }, 40.15) ;
+tl.to("#phclass", { x: 12, duration: 5, ease: "sine.inOut", yoyo: true, repeat: 1, immediateRender: false }, 30.1);
+tl.to("#dict", { y: -8, duration: 5.4, ease: "sine.inOut", yoyo: true, repeat: 1, immediateRender: false }, 29.7);
+tl.set("#s4w", { opacity: 0 }, 41.15);
+// Scene 5
+sheetIn("#s5w", 40.60, "x", 1260)  ;
+
+slam("#playttl", 41.0, -2) ;
+tl.to("#playttl", { y: -9, duration: 1.7, ease: "sine.inOut", yoyo: true, repeat: 1, immediateRender: false }, 42.3);
+tl.fromTo("#step1", { opacity: 0, scale: 1.7, rotation: 5 }, { opacity: 1, scale: 1, rotation: 0, duration: 0.22, ease: "power4.in", immediateRender: false }, 42.25) ;
+tl.fromTo("#step2", { opacity: 0, scale: 1.7, rotation: 5 }, { opacity: 1, scale: 1, rotation: 0, duration: 0.22, ease: "power4.in", immediateRender: false }, 43.05) ;
+tl.fromTo("#step3", { opacity: 0, scale: 1.7, rotation: 5 }, { opacity: 1, scale: 1, rotation: 0, duration: 0.22, ease: "power4.in", immediateRender: false }, 44.05) ;
+tl.to(["#step1", "#step2", "#step3"], { scale: 1.02, duration: 0.16, yoyo: true, repeat: 1, ease: "power2.out", immediateRender: false }, 44.8);
+tl.fromTo("#cam", { scale: 1.02 }, { scale: 1.05, transformOrigin: "540px 900px", duration: 4.4, ease: "power1.inOut", immediateRender: false }, 40.65);
+tl.set("#s5w", { opacity: 0 }, 45.7);
+// Scene 6
+tl.fromTo("#cam", { scale: 1.05 }, { scale: 1.08, transformOrigin: "540px 850px", duration: 14, ease: "power1.inOut", immediateRender: false }, 45.3);
+sheetIn("#s6w", 45.15, "x", 1260)  ;
+tl.fromTo("#phhq", { opacity: 1, y: 760, rotation: 10.5 }, { opacity: 1, y: 0, rotation: 1.5, duration: 0.45, ease: sm("back.out(1.3)", 0.45), immediateRender: false }, 45.5)  ;
+pop("#t6a", 46.15, 3) ;
+tl.fromTo("#boxcard", { opacity: 1, y: 480, rotation: 7 }, { opacity: 1, y: 0, rotation: 1, duration: 0.45, ease: sm("back.out(1.3)", 0.45), immediateRender: false }, 46.9) ;
+draw("#boxx1", 48.5, 0.3) ;
+draw("#boxx2", 48.85, 0.3) ;
+tl.fromTo("#ccsign", { opacity: 0, y: 200, rotation: 4 }, { opacity: 1, y: 0, rotation: -4, duration: 0.35, ease: sm("back.out(1.8)", 0.35), immediateRender: false }, 50.1) ;
+tl.fromTo("#statscard", { opacity: 1, y: 480, rotation: 5 }, { opacity: 1, y: 0, rotation: -1, duration: 0.45, ease: sm("back.out(1.3)", 0.45), immediateRender: false }, 53.55) ;
+tl.fromTo("#stat1", { opacity: 0, y: 34 }, { opacity: 1, y: 0, duration: 0.3, ease: sm("back.out(1.6)", 0.3), immediateRender: false }, 53.95)     ;
+tl.fromTo("#stat2", { opacity: 0, y: 34 }, { opacity: 1, y: 0, duration: 0.3, ease: sm("back.out(1.6)", 0.3), immediateRender: false }, 56.55)      ;
+tl.to("#statscard", { scale: 1.015, duration: 0.16, ease: "power2.out", yoyo: true, repeat: 1, immediateRender: false }, 60.55) ;
+tl.to("#phhq", { x: -12, duration: 5.2, ease: "sine.inOut", yoyo: true, repeat: 1, immediateRender: false }, 46.3);
+tl.set("#s6w", { opacity: 0 }, 60.75);
+// Scene 7
+tl.fromTo("#cam", { scale: 1.08 }, { scale: 1.09, transformOrigin: "540px 960px", duration: 6.4, ease: "power1.inOut", immediateRender: false }, 68.9);
+sheetIn("#s7w", 60.2, "x", 1260)  ;
+tl.fromTo("#phstudent", { opacity: 1, y: 760, rotation: 11 }, { opacity: 1, y: 0, rotation: 2, duration: 0.45, ease: sm("back.out(1.3)", 0.45), immediateRender: false }, 60.55)  ;
+pop("#t7a", 62.4, -2) ;
+pop("#t7b", 63.2, 2) ;
+pop("#t7c", 63.85, -2) ;
+tl.fromTo("#phtoll", { opacity: 1, y: 760, rotation: 7 }, { opacity: 1, y: 0, rotation: -2, duration: 0.45, ease: sm("back.out(1.3)", 0.45), immediateRender: false }, 65.9)  ;
+tl.to("#phtoll", { scale: 1.03, duration: 0.16, ease: "power2.out", yoyo: true, repeat: 1, immediateRender: false }, 67.3) ;
+tl.fromTo("#qcard", { opacity: 1, y: 480, rotation: 5 }, { opacity: 1, y: 0, rotation: -1, duration: 0.45, ease: sm("back.out(1.3)", 0.45), immediateRender: false }, 68.9) ;
+pop("#tfollow", 73.3, -2) ;
+pop("#tchip", 73.95, 2) ;
+tl.to("#phstudent", { y: -10, duration: 4.6, ease: "sine.inOut", yoyo: true, repeat: 1, immediateRender: false }, 61.5);
+tl.to("#phtoll", { x: 10, duration: 4.4, ease: "sine.inOut", yoyo: true, repeat: 1, immediateRender: false }, 66.6);
+tl.to("#qcard", { y: -8, duration: 5.6, ease: "sine.inOut", yoyo: true, repeat: 1, immediateRender: false }, 69.8);
+tl.to("#tchip", { scale: 1.06, duration: 0.2, ease: "power2.out", yoyo: true, repeat: 1, immediateRender: false }, 74.9);
+    window.__timelines["main"] = tl;
+  </script>
+</body>
+</html>

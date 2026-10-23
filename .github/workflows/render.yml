@@ -1,0 +1,41 @@
+name: Render Photoshop Play
+
+on:
+  workflow_dispatch:
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install headless Chrome system libraries
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 \
+            libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 \
+            libxrandr2 libgbm1 libasound2t64 libpango-1.0-0 libcairo2 ffmpeg
+
+      - name: Render composition (HyperFrames)
+        working-directory: run/06-scenes/collage
+        run: npx -y hyperframes@0.8.33 render . --quality high --crf 14 -o renders/silent.mp4
+
+      - name: Mix narration + SFX, loudnorm
+        working-directory: run/06-scenes/collage
+        run: |
+          mkdir -p ../../07-render
+          python3 mix_final.py renders/silent.mp4 ../../07-render/the-photoshop-play.mp4
+
+      - name: Upload finished video
+        uses: actions/upload-artifact@v4
+        with:
+          name: photoshop-play-video
+          path: |
+            run/07-render/the-photoshop-play.mp4
+            run/06-scenes/collage/renders/silent.mp4
+          retention-days: 7
