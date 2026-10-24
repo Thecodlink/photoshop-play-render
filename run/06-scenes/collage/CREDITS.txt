@@ -17,7 +17,7 @@ student | File:Student on the green - laptop-1 (25812934293).jpg | CC BY 2.0 | U
 student2004 | File:Student using desktop computer at CIJEF in 2004.jpg | CC0 | Syced | commons.wikimedia.org
 newsroom | File:Interior view of newspaper delivery room showing man taking stack of newspapers from machine) - World-Telegram photo LCCN95506971.jpg | Public domain | Library of Congress | commons.wikimedia.org
 fonts | Playfair Display VF, Archivo Narrow 700, Permanent Marker — self-hosted woff2 (v1 run) | OFL
-sfx | paper kit wavs from v1 run (paper-tap, paper-slide, paper-flick, key-press, pop, whoosh, riser, marker) — SJC pack not present in sfx-library at build time
+sfx | paper kit wavs from v1 run (paper-tap, paper-slide, paper-flick, key-press, pop, whoosh, riser, marker)
 cashpile.jpg — "Dollar-499481" by geralt — CC0 — Wikimedia Commons
 handshake.jpg — "HANDSHAKE 2016-07-18" by EU2016 SK — CC0 — Wikimedia Commons
 kidpc.jpg — "APRENDIZAJE ACTIVO" by SAMMYTQM — CC BY-SA 4.0 — Wikimedia Commons
